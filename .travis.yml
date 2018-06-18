@@ -19,4 +19,4 @@ matrix:
 install:
   - dotnet restore
 script:
-  - msbuild /p:Configuration=Release
+  - dotnet build -c Release
