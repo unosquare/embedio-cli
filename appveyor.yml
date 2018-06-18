@@ -19,4 +19,4 @@ environment:
 before_build:
 - dotnet restore --verbosity q
 build_script:
-- msbuild /p:Configuration=Release Unosquare.Labs.EmbedIO.sln
+- msbuild /p:Configuration=Release
