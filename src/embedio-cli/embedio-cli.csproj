@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Portable web server ready to use</Description>
+    <Copyright>Copyright (c) 2016-2018 - Unosquare</Copyright>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <LangVersion>7.1</LangVersion>
+    <AssemblyName>embedio-cli</AssemblyName>
+    <Version>0.1.0</Version>
+    <PackageVersion>0.1.0</PackageVersion>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="EmbedIO" Version="1.13.0" />
+  </ItemGroup>
+</Project>
