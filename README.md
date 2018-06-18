@@ -3,7 +3,7 @@
 
 # EmbedIO CLI
 
-A `dotnet` CLI command that enables start any web folder or EmbedIO-enabled DLL from command line.
+A `dotnet` global tool that enables start any web folder or EmbedIO-enabled DLL from command line.
 
 ## Installation
 
@@ -54,7 +54,7 @@ $ embedio-cli --api mywebapi.dll
 $ embedio-cli -p c:\wwwroot --api mywebapi.dll
 ```
 
-### Arguments
+## Arguments
 
 | Short Argument | Long Argument | Description | Default | Required |
 |:-----: | :-----------: | :----------: | :-----------:| :-----------:|
