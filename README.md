@@ -39,7 +39,7 @@ Run the command to serve a static folder and watch the files in the current dire
 $ embedio-cli
 ```
 
-By default, all the files inside the folder are been watching and if any change happens on them it would reload the page, you can disable this functionality by passing `--no-watch`
+By default, all the files inside the folder are been watched and if any change happens on them it will reload the page, you can disable this functionality by passing `--no-watch`
 
 ### Specify folder
 
