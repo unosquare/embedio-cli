@@ -4,8 +4,6 @@
     <Description>Portable web server ready to use</Description>
     <Copyright>Copyright (c) 2016-2018 - Unosquare</Copyright>
     <Company>Unosquare</Company>
-    <!--<AssemblyTitle>Embedio Cli</AssemblyTitle>-->
-    <!--<AssemblyName>EmbedioCli</AssemblyName>-->
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>Exe</OutputType>
     <LangVersion>7.1</LangVersion>
@@ -16,7 +14,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="EmbedIO" Version="1.13.1" />
-    <PackageReference Include="Unosquare.Swan.Lite" Version="0.32.1" />
+    <PackageReference Include="EmbedIO" Version="1.14.1" />
+    <PackageReference Include="Unosquare.Swan.Lite" Version="0.32.2" />
   </ItemGroup>
 </Project>
