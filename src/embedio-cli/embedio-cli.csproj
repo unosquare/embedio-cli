@@ -3,13 +3,15 @@
   <PropertyGroup>
     <Description>Portable web server ready to use</Description>
     <Copyright>Copyright (c) 2016-2018 - Unosquare</Copyright>
+    <Company>Unosquare</Company>
+    <!--<AssemblyTitle>Embedio Cli</AssemblyTitle>-->
+    <!--<AssemblyName>EmbedioCli</AssemblyName>-->
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>Exe</OutputType>
     <LangVersion>7.1</LangVersion>
-    <AssemblyName>embedio-cli</AssemblyName>
-    <Version>0.1.0</Version>
-    <PackageVersion>0.1.0</PackageVersion>
-    <IsPackable>true</IsPackable>
+    <ToolCommandName>embedio-cli</ToolCommandName>
+    <Version>0.1.1</Version>
+    <PackageVersion>0.1.1</PackageVersion>
     <PackAsTool>true</PackAsTool>
   </PropertyGroup>
   
