@@ -1,5 +1,7 @@
 ﻿namespace Unosquare.Labs.EmbedIO.Command
 {
+    using Constants;
+    using Swan;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -9,55 +11,41 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Constants;
-    using Swan;
 
-    class StaticFilesLiteModule
+    internal class StaticFilesLiteModule
         : WebModuleBase
     {
         private readonly Lazy<Dictionary<string, string>> _mimeTypes =
             new Lazy<Dictionary<string, string>>(
                 () =>
-                    new Dictionary<string, string>(Constants.MimeTypes.DefaultMimeTypes, StringComparer.InvariantCultureIgnoreCase));
+                    new Dictionary<string, string>(MimeTypes.DefaultMimeTypes, StringComparer.InvariantCultureIgnoreCase));
 
-        /// <summary>
-        /// The chunk size for sending files
-        /// </summary>
         private const int ChunkSize = 256 * 1024;
 
-        /// <summary>
-        /// Maximal length of entry in DirectoryBrowser
-        /// </summary>
         private const int MaxEntryLength = 50;
 
-        /// <summary>
-        /// How many characters used after time in DirectoryBrowser
-        /// </summary>
         private const int SizeIndent = 20;
 
         private const string DefaultDocument = "index.html";
 
         private readonly string _fullPath;
+        private readonly string _jsPayload;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StaticFilesLiteModule"/> class.
-        /// </summary>
-        /// <param name="fileSystemPath">The file system path.</param>
-        /// <exception cref="ArgumentException"></exception>
         public StaticFilesLiteModule(string fileSystemPath)
         {
             if (!Directory.Exists(fileSystemPath))
                 throw new ArgumentException($"Path '{fileSystemPath}' does not exist.");
 
             _fullPath = Path.GetFullPath(fileSystemPath);
+            _jsPayload = $"<script>var ws=new WebSocket(\'ws://\'+document.location.hostname+\':{Program.WsPort}/watcher\');ws.onmessage=function(){{document.location.reload()}};</script>";
 
             AddHandler(ModuleMap.AnyPath, HttpVerbs.Get, HandleGet);
         }
-        
-        public override string Name => nameof(StaticFilesLiteModule).Humanize();
+
+        public override string Name => nameof(StaticFilesLiteModule);
 
         private static async Task WriteToOutputStream(
-            HttpListenerResponse response,
+            IHttpContext context,
             Stream buffer,
             CancellationToken ct)
         {
@@ -67,7 +55,7 @@
 
             while (true)
             {
-                if (sendData + ChunkSize > response.ContentLength64) readBufferSize = (int)(response.ContentLength64 - sendData);
+                if (sendData + ChunkSize > context.Response.ContentLength64) readBufferSize = (int)(context.Response.ContentLength64 - sendData);
 
                 buffer.Seek(sendData, SeekOrigin.Begin);
                 var read = await buffer.ReadAsync(streamBuffer, 0, readBufferSize, ct);
@@ -75,11 +63,11 @@
                 if (read == 0) break;
 
                 sendData += read;
-                await response.OutputStream.WriteAsync(streamBuffer, 0, readBufferSize, ct);
+                await context.Response.OutputStream.WriteAsync(streamBuffer, 0, readBufferSize, ct);
             }
         }
 
-        private static Task<bool> HandleDirectory(HttpListenerContext context, string localPath, CancellationToken ct)
+        private static Task<bool> HandleDirectory(IHttpContext context, string localPath, CancellationToken ct)
         {
             var entries = new[] { context.Request.RawUrl == "/" ? string.Empty : "<a href='../'>../</a>" }
                 .Concat(
@@ -128,7 +116,7 @@
             return context.HtmlResponseAsync(content, cancellationToken: ct);
         }
 
-        private Task<bool> HandleGet(HttpListenerContext context, CancellationToken ct)
+        private Task<bool> HandleGet(IHttpContext context, CancellationToken ct)
         {
             var urlPath = context.Request.Url.LocalPath.Replace('/', Path.DirectorySeparatorChar);
             var basePath = Path.Combine(_fullPath, urlPath.TrimStart(new[] { Path.DirectorySeparatorChar }));
@@ -139,14 +127,14 @@
             urlPath = urlPath.TrimStart(new[] { Path.DirectorySeparatorChar });
 
             var path = Path.Combine(_fullPath, urlPath);
-            
+
             if (File.Exists(path))
                 return HandleFile(context, path, ct);
-            
+
             return Directory.Exists(basePath) ? HandleDirectory(context, basePath, ct) : Task.FromResult(false);
         }
 
-        private async Task<bool> HandleFile(HttpListenerContext context, string localPath, CancellationToken ct)
+        private async Task<bool> HandleFile(IHttpContext context, string localPath, CancellationToken ct)
         {
             Stream buffer = null;
 
@@ -158,15 +146,13 @@
                     context.Response.ContentType = _mimeTypes.Value[fileExtension];
 
                 buffer = new FileStream(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
- 
+
                 if (Path.GetExtension(localPath).Equals(".html") || Path.GetExtension(localPath).Equals(".htm"))
                     buffer = WriteJsWebSocket(localPath);
 
-
                 context.Response.ContentLength64 = buffer.Length;
 
-                await WriteToOutputStream(context.Response, buffer, ct);
-                
+                await WriteToOutputStream(context, buffer, ct);
             }
             catch (HttpListenerException)
             {
@@ -180,11 +166,14 @@
             return true;
         }
 
-        private static Stream WriteJsWebSocket(string path)
+        private Stream WriteJsWebSocket(string path)
         {
             var file = File.ReadAllText(path, Encoding.UTF8);
-            var jsTag = "<script>var ws=new WebSocket('ws://'+document.location.hostname+':"+ Program.WsPort + "/watcher');ws.onmessage=function(){document.location.reload()};</script>";
-            var newFile = file.Insert(file.IndexOf("</body>"), jsTag);
+
+            if (file.IndexOf("</body>", StringComparison.Ordinal) == -1)
+                return new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+            var newFile = file.Insert(file.IndexOf("</body>", StringComparison.Ordinal), _jsPayload);
 
             return new MemoryStream(Encoding.UTF8.GetBytes(newFile));
         }

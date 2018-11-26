@@ -10,8 +10,8 @@ namespace Unosquare.Labs.EmbedIO.Command
     /// </summary>
     internal class Program
     {
-
         public static int WsPort { get; set; }
+
         /// <summary>
         /// Load WebServer instance
         /// </summary>
@@ -66,7 +66,7 @@ namespace Unosquare.Labs.EmbedIO.Command
         /// </summary>
         /// <param name="apiPath"></param>
         /// <param name="server"></param>
-        private static void LoadApi(WebServer server, string apiPath)
+        private static void LoadApi(IWebServer server, string apiPath)
         {
             try
             {
@@ -88,9 +88,9 @@ namespace Unosquare.Labs.EmbedIO.Command
                     }
                 }
             }
-            catch (FileNotFoundException fnfex)
+            catch (FileNotFoundException fileEx)
             {
-                $"Assembly FileNotFoundException {fnfex.Message}".Debug();
+                $"Assembly FileNotFoundException {fileEx.Message}".Debug();
             }
             catch (Exception ex)
             {
@@ -101,8 +101,8 @@ namespace Unosquare.Labs.EmbedIO.Command
 
         private static string SearchForWwwRootFolder(string rootPath)
         {
-            var wwwrootpath = Path.Combine(rootPath, "wwwroot");
-            return Directory.Exists(wwwrootpath) ? wwwrootpath : rootPath;
+            var path = Path.Combine(rootPath, "wwwroot");
+            return Directory.Exists(path) ? path : rootPath;
         }
     }
 }
