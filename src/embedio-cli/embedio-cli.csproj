@@ -6,15 +6,15 @@
     <Company>Unosquare</Company>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>Exe</OutputType>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <ToolCommandName>embedio-cli</ToolCommandName>
-    <Version>0.1.1</Version>
-    <PackageVersion>0.1.1</PackageVersion>
+    <Version>0.2.0</Version>
+    <PackageVersion>0.2.0</PackageVersion>
     <PackAsTool>true</PackAsTool>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="EmbedIO" Version="1.14.1" />
-    <PackageReference Include="Unosquare.Swan.Lite" Version="0.32.2" />
+    <PackageReference Include="EmbedIO" Version="2.0.0" />
+    <PackageReference Include="Unosquare.Swan.Lite" Version="0.35.0" />
   </ItemGroup>
 </Project>

@@ -1,9 +1,9 @@
 ﻿namespace Unosquare.Labs.EmbedIO.Command
 {
-    using System.IO;
     using Swan;
-    using System;
     using Swan.Abstractions;
+    using System;
+    using System.IO;
 
     public class Watcher : SingletonBase<Watcher>
     {
@@ -15,7 +15,7 @@
             WebSocketWatcher.Setup();
 
             "Watching".Info(nameof(WatchFiles));
-            var watcher = new FileSystemWatcher {Path = path};
+            var watcher = new FileSystemWatcher { Path = path };
 
             // Only watch text files.
             // watcher.Filter = "*.txt";
