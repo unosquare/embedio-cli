@@ -18,9 +18,8 @@
         private readonly Lazy<Dictionary<string, string>> _mimeTypes =
             new Lazy<Dictionary<string, string>>(
                 () =>
-                    new Dictionary<string, string>(MimeTypes.DefaultMimeTypes, StringComparer.InvariantCultureIgnoreCase));
-
-        private const int ChunkSize = 256 * 1024;
+                    new Dictionary<string, string>(MimeTypes.DefaultMimeTypes.Value,
+                        StringComparer.InvariantCultureIgnoreCase));
 
         private const int MaxEntryLength = 50;
 
@@ -37,39 +36,17 @@
                 throw new ArgumentException($"Path '{fileSystemPath}' does not exist.");
 
             _fullPath = Path.GetFullPath(fileSystemPath);
-            _jsPayload = $"<script>var ws=new WebSocket(\'ws://\'+document.location.hostname+\':{Program.WsPort}/watcher\');ws.onmessage=function(){{document.location.reload()}};</script>";
+            _jsPayload =
+                $"<script>var ws=new WebSocket(\'ws://\'+document.location.hostname+\':{Program.WsPort}/watcher\');ws.onmessage=function(){{document.location.reload()}};</script>";
 
             AddHandler(ModuleMap.AnyPath, HttpVerbs.Get, HandleGet);
         }
 
         public override string Name => nameof(StaticFilesLiteModule);
 
-        private static async Task WriteToOutputStream(
-            IHttpContext context,
-            Stream buffer,
-            CancellationToken ct)
-        {
-            var streamBuffer = new byte[ChunkSize];
-            long sendData = 0;
-            var readBufferSize = ChunkSize;
-
-            while (true)
-            {
-                if (sendData + ChunkSize > context.Response.ContentLength64) readBufferSize = (int)(context.Response.ContentLength64 - sendData);
-
-                buffer.Seek(sendData, SeekOrigin.Begin);
-                var read = await buffer.ReadAsync(streamBuffer, 0, readBufferSize, ct);
-
-                if (read == 0) break;
-
-                sendData += read;
-                await context.Response.OutputStream.WriteAsync(streamBuffer, 0, readBufferSize, ct);
-            }
-        }
-
         private static Task<bool> HandleDirectory(IHttpContext context, string localPath, CancellationToken ct)
         {
-            var entries = new[] { context.Request.RawUrl == "/" ? string.Empty : "<a href='../'>../</a>" }
+            var entries = new[] {context.Request.RawUrl == "/" ? string.Empty : "<a href='../'>../</a>"}
                 .Concat(
                     Directory.GetDirectories(localPath)
                         .Select(path =>
@@ -119,12 +96,12 @@
         private Task<bool> HandleGet(IHttpContext context, CancellationToken ct)
         {
             var urlPath = context.Request.Url.LocalPath.Replace('/', Path.DirectorySeparatorChar);
-            var basePath = Path.Combine(_fullPath, urlPath.TrimStart(new[] { Path.DirectorySeparatorChar }));
+            var basePath = Path.Combine(_fullPath, urlPath.TrimStart(new[] {Path.DirectorySeparatorChar}));
 
             if (urlPath.Last() == Path.DirectorySeparatorChar)
                 urlPath = urlPath + DefaultDocument;
 
-            urlPath = urlPath.TrimStart(new[] { Path.DirectorySeparatorChar });
+            urlPath = urlPath.TrimStart(new[] {Path.DirectorySeparatorChar});
 
             var path = Path.Combine(_fullPath, urlPath);
 
@@ -147,12 +124,12 @@
 
                 buffer = new FileStream(localPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-                if (Path.GetExtension(localPath).Equals(".html") || Path.GetExtension(localPath).Equals(".htm"))
+                if (Path.GetExtension(localPath).StartsWith(".htm"))
                     buffer = WriteJsWebSocket(localPath);
 
                 context.Response.ContentLength64 = buffer.Length;
 
-                await WriteToOutputStream(context, buffer, ct);
+                await context.Response.WriteToOutputStream(buffer, 0, ct);
             }
             catch (HttpListenerException)
             {
