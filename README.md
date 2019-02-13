@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/tp2ce47b9mpbo20f/branch/master?svg=true)](https://ci.appveyor.com/project/geoperez/embedio-cli/branch/master)
 [![Build Status](https://travis-ci.org/unosquare/embedio-cli.svg?branch=master)](https://travis-ci.org/unosquare/embedio-cli)
 
-![EmbedIO](http://unosquare.github.io/embedio/images/embedio.png)
+![EmbedIO](https://raw.githubusercontent.com/unosquare/embedio/master/images/embedio.png)
 
 # EmbedIO CLI
 
