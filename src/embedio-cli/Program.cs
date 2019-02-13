@@ -26,8 +26,6 @@ namespace Unosquare.Labs.EmbedIO.Command
 
             var currentDirectory = Directory.GetCurrentDirectory();
 
-            "Press any key to stop the server.".Info();
-
             var url = $"http://localhost:{options.Port}/";
             WsPort = options.Port + 1;
 
@@ -44,7 +42,7 @@ namespace Unosquare.Labs.EmbedIO.Command
                     Watcher.Instance.WatchFiles(options.RootPath ?? SearchForWwwRootFolder(currentDirectory));
 
                 // Assemblies
-                $"Registering Assembly {options.ApiAssemblies}".Debug();
+                $"Registering Assembly {options.ApiAssemblies}".Debug(nameof(Program));
                 LoadApi(server, options.ApiAssemblies ?? currentDirectory);
 
                 // start the server
@@ -56,6 +54,7 @@ namespace Unosquare.Labs.EmbedIO.Command
                 };
 
                 browser.Start();
+                "Press any key to stop the server.".Info(nameof(Program));
 
                 Console.ReadKey();
             }
@@ -90,11 +89,11 @@ namespace Unosquare.Labs.EmbedIO.Command
             }
             catch (FileNotFoundException fileEx)
             {
-                $"Assembly FileNotFoundException {fileEx.Message}".Debug();
+                $"Assembly FileNotFoundException {fileEx.Message}".Debug(nameof(Program));
             }
             catch (Exception ex)
             {
-                $"Assembly Exception {ex.Message}".Debug();
+                $"Assembly Exception {ex.Message}".Debug(nameof(Program));
                 ex.Log(nameof(Program));
             }
         }

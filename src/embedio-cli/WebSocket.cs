@@ -10,7 +10,7 @@
 
         public static void Setup()
         {
-            Server = new WebServer("http://localhost:" + Program.WsPort + "/");
+            Server = new WebServer($"http://localhost:{Program.WsPort}/");
 
             Server.RegisterModule(new WebSocketsModule());
             Server.Module<WebSocketsModule>().RegisterWebSocketsServer<WebSocketsWatcherServer>();

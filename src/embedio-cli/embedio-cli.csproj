@@ -2,18 +2,18 @@
 
   <PropertyGroup>
     <Description>Portable web server ready to use</Description>
-    <Copyright>Copyright (c) 2016-2018 - Unosquare</Copyright>
+    <Copyright>Copyright (c) 2016-2019 - Unosquare</Copyright>
     <Company>Unosquare</Company>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <OutputType>Exe</OutputType>
     <LangVersion>7.3</LangVersion>
     <ToolCommandName>embedio-cli</ToolCommandName>
-    <Version>0.3.1</Version>
-    <PackageVersion>0.3.1</PackageVersion>
+    <Version>0.3.2</Version>
+    <PackageVersion>0.3.2</PackageVersion>
     <PackAsTool>true</PackAsTool>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="EmbedIO" Version="2.2.0-pre3" />
+    <PackageReference Include="EmbedIO" Version="2.2.7" />
   </ItemGroup>
 </Project>
