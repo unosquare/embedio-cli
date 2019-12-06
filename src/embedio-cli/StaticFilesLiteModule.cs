@@ -18,8 +18,7 @@
         private readonly Lazy<Dictionary<string, string>> _mimeTypes =
             new Lazy<Dictionary<string, string>>(
                 () =>
-                    new Dictionary<string, string>(MimeTypes.DefaultMimeTypes.Value,
-                        StringComparer.InvariantCultureIgnoreCase));
+                    new Dictionary<string, string>(MimeTypes.DefaultMimeTypes, StringComparer.InvariantCultureIgnoreCase));
 
         private const int MaxEntryLength = 50;
 

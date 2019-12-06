@@ -29,35 +29,33 @@ namespace Unosquare.Labs.EmbedIO.Command
             var url = $"http://localhost:{options.Port}/";
             WsPort = options.Port + 1;
 
-            using (var server = new WebServer(url))
+            using var server = new WebServer(url);
+            server.WithLocalSession();
+                
+            // Static files
+            if (options.RootPath != null || options.ApiAssemblies == null)
+                server.RegisterModule(new StaticFilesLiteModule(options.RootPath ?? SearchForWwwRootFolder(currentDirectory)));
+
+            // Watch Files
+            if (!options.NoWatch)
+                Watcher.Instance.WatchFiles(options.RootPath ?? SearchForWwwRootFolder(currentDirectory));
+
+            // Assemblies
+            $"Registering Assembly {options.ApiAssemblies}".Debug(nameof(Program));
+            LoadApi(server, options.ApiAssemblies ?? currentDirectory);
+
+            // start the server
+            server.RunAsync();
+                
+            var browser = new System.Diagnostics.Process
             {
-                server.WithLocalSession();
-                
-                // Static files
-                if (options.RootPath != null || options.ApiAssemblies == null)
-                    server.RegisterModule(new StaticFilesLiteModule(options.RootPath ?? SearchForWwwRootFolder(currentDirectory)));
+                StartInfo = new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true }
+            };
 
-                // Watch Files
-                if (!options.NoWatch)
-                    Watcher.Instance.WatchFiles(options.RootPath ?? SearchForWwwRootFolder(currentDirectory));
+            browser.Start();
+            "Press any key to stop the server.".Info(nameof(Program));
 
-                // Assemblies
-                $"Registering Assembly {options.ApiAssemblies}".Debug(nameof(Program));
-                LoadApi(server, options.ApiAssemblies ?? currentDirectory);
-
-                // start the server
-                server.RunAsync();
-                
-                var browser = new System.Diagnostics.Process
-                {
-                    StartInfo = new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true }
-                };
-
-                browser.Start();
-                "Press any key to stop the server.".Info(nameof(Program));
-
-                Console.ReadKey();
-            }
+            Console.ReadKey();
         }
 
         /// <summary>
