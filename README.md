@@ -6,6 +6,8 @@
 
 # EmbedIO CLI
 
+**IMPORTANT:** This project is archived, we are no longer supporting this .NET Core tool.
+
 *:star: Please star this project if you find it useful!*
 
 A `dotnet` global tool that enables start any web folder or [EmbedIO](https://github.com/unosquare/embedio) assembly (WebAPI or WebSocket) from command line.
